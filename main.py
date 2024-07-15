@@ -44,3 +44,15 @@ def update_spreadsheet(sheets, i, j, value):
         valueInputOption="USER_ENTERED",
         body={"values": [[value]]}
     ).execute()
+
+
+                    donator[name_donator] = value_donator
+                j+=1
+            #Colocando as informações na planilha
+            update_spreadsheet(sheets, i,'I',donator )
+            update_spreadsheet(sheets, i,'J', sum_value)
+    else:
+        print("Erro ao fazer a requisição:", response.status_code)
+    i+=1
+notification.notify_concluded("CÓDIGO FINALIZADO","Seu código foi finalizado com sucesso! Agora você pode fechar sua IDE, e utilizar a planilha com os dados todos funcionais")
+
