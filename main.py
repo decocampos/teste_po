@@ -34,7 +34,35 @@ def update_spreadsheet(sheets, i, j, value):
         body={"values": [[value]]}
     ).execute()
 
+#===============================================================
+'''CÓDGIGO PRINCIPAL'''
+notification = NotificationHandler()
+notification.notify_concluded("CÓDIGO INICIADO","Seu código foi iniciado, agora, você pode acompanhar a planilha sendo modificada. Assim que for concluído, você receberá outra notificação dessa, enquanto isso deixa sua máquina ligada")
 
+i=2 #Contador para escrever a posição correta na planilha
+for pronac in cell_value:
+    donator=''
+    sum_value=0
+    #Cada PRONAC que tem na planilha é consultado e retirado as informação
+    url = f"http://api.salic.cultura.gov.br/v1/projetos/{pronac[0]}?format=json"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        #Situação caso, ele não tenha recebido valor dos patrocinadores
+        if len(data['_embedded']['captacoes'])==0:
+            update_spreadsheet(sheets, i,'I', "Não possui patrocinadores")
+        #Caso ele possua patrocinadores
+        else:
+            j=0 # Contador para caso exista mais de um patrocinador
+            donator={}
+            for donator_info in data['_embedded']['captacoes']:
+                name_donator= str(data['_embedded']['captacoes'][j]['nome_doador']) 
+                value_donator=float(data['_embedded']['captacoes'][j]['valor'])
+                sum_value+=value_donator
+                if name_donator in donator:
+                    donator[name_donator] += value_donator
+                else:
                     donator[name_donator] = value_donator
                 j+=1
             #Colocando as informações na planilha
@@ -44,4 +72,5 @@ def update_spreadsheet(sheets, i, j, value):
         print("Erro ao fazer a requisição:", response.status_code)
     i+=1
 notification.notify_concluded("CÓDIGO FINALIZADO","Seu código foi finalizado com sucesso! Agora você pode fechar sua IDE, e utilizar a planilha com os dados todos funcionais")
+
 
