@@ -16,18 +16,7 @@ SAMPLE_SPREADSHEET_ID = "104nykhGL5aElGJ0JYx-Mda67Hd0rgOoKTxF-XghF_S8"
 google_auth=GoogleAuthentication(SCOPES)
 creds= google_auth.authenticate()
 
-#===============================================================
 
-'''RECEBENDO INFORMAÇÕES DA PLANILHA'''
-try:
-    service = build("sheets", "v4", credentials=creds)
-    sheets=service.spreadsheets()
-    #Recebe Informações dos PRONAC's que estão na planilha
-    range_to_read = "Projetos!A2:A"
-    result = sheets.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=range_to_read).execute()
-    cell_value = result.get('values', [[]]) if 'values' in result else None
-except HttpError as err:
-    print(err)
 
 #===============================================================
 
@@ -44,3 +33,15 @@ def update_spreadsheet(sheets, i, j, value):
         valueInputOption="USER_ENTERED",
         body={"values": [[value]]}
     ).execute()
+
+
+                    donator[name_donator] = value_donator
+                j+=1
+            #Colocando as informações na planilha
+            update_spreadsheet(sheets, i,'I',donator )
+            update_spreadsheet(sheets, i,'J', sum_value)
+    else:
+        print("Erro ao fazer a requisição:", response.status_code)
+    i+=1
+notification.notify_concluded("CÓDIGO FINALIZADO","Seu código foi finalizado com sucesso! Agora você pode fechar sua IDE, e utilizar a planilha com os dados todos funcionais")
+
